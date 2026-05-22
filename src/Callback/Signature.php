@@ -12,7 +12,9 @@ final readonly class Signature
 {
     public static function sign(string $body, string $key): string
     {
-        return 'sha256='.\hash_hmac('sha256', $body, $key);
+        $digest = \hash_hmac('sha256', $body, $key);
+
+        return "sha256={$digest}";
     }
 
     public static function verify(string $body, string $signature, string $key): bool

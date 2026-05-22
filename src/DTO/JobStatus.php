@@ -31,7 +31,7 @@ final readonly class JobStatus
 
         $status = JobState::tryFrom($data['status']);
         if (! $status instanceof JobState) {
-            throw new ClientException('Invalid job status: unknown status "'.$data['status'].'".');
+            throw new ClientException("Invalid job status: unknown status \"{$data['status']}\".");
         }
 
         $exitCode = $data['exitCode'] ?? null;

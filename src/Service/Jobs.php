@@ -40,7 +40,8 @@ final readonly class Jobs
 
     public function get(string $jobId): JobStatus
     {
-        $data = $this->json('GET', '/v1/jobs/'.\rawurlencode($jobId));
+        $encodedJobId = \rawurlencode($jobId);
+        $data = $this->json('GET', "/v1/jobs/{$encodedJobId}");
 
         return JobStatus::fromArray($data);
     }
@@ -54,7 +55,8 @@ final readonly class Jobs
 
     public function delete(string $jobId): void
     {
-        $response = $this->send('DELETE', '/v1/jobs/'.\rawurlencode($jobId));
+        $encodedJobId = \rawurlencode($jobId);
+        $response = $this->send('DELETE', "/v1/jobs/{$encodedJobId}");
         $this->assertSuccess($response);
     }
 
@@ -74,7 +76,9 @@ final readonly class Jobs
         try {
             $decoded = \json_decode($response->text(), true, flags: JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
-            throw new ClientException('Failed to decode orchestrator response: '.$e->getMessage(), $response->getStatusCode());
+            $message = $e->getMessage();
+
+            throw new ClientException("Failed to decode orchestrator response: {$message}", $response->getStatusCode());
         }
 
         if (! \is_array($decoded)) {
@@ -102,7 +106,7 @@ final readonly class Jobs
         ];
 
         if ($this->apiKey !== null && $this->apiKey !== '') {
-            $headers['Authorization'] = 'Bearer '.$this->apiKey;
+            $headers['Authorization'] = "Bearer {$this->apiKey}";
         }
 
         foreach ($headers as $key => $value) {
@@ -114,7 +118,9 @@ final readonly class Jobs
             try {
                 $body = \json_encode($payload, JSON_THROW_ON_ERROR);
             } catch (JsonException $e) {
-                throw new ClientException('Failed to encode orchestrator request: '.$e->getMessage());
+                $message = $e->getMessage();
+
+                throw new ClientException("Failed to encode orchestrator request: {$message}");
             }
         }
 
@@ -125,7 +131,7 @@ final readonly class Jobs
                 ->setUserAgent($this->userAgent)
                 ->setAllowRedirects(false)
                 ->fetch(
-                    url: $this->endpoint.$path,
+                    url: "{$this->endpoint}{$path}",
                     method: $method,
                     body: $body,
                     timeoutMs: $timeoutMs,

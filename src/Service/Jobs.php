@@ -121,8 +121,6 @@ final readonly class Jobs
 
         try {
             return $client
-                ->setTimeout($timeoutMs)
-                ->setConnectTimeout($connectTimeoutMs)
                 ->setAllowRedirects(false)
                 ->fetch(
                     url: $this->endpoint.$path,

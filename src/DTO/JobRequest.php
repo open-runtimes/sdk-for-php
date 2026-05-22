@@ -31,15 +31,21 @@ final readonly class JobRequest implements ArraySerializable
     {
         $data = [
             'id' => $this->id,
-            'meta' => $this->meta,
             'image' => $this->image,
             'command' => $this->command,
             'cpu' => $this->cpu,
             'memory' => $this->memory,
-            'environment' => $this->environment,
             'timeoutSeconds' => $this->timeoutSeconds,
             'workspace' => $this->workspace,
         ];
+
+        if ($this->meta !== []) {
+            $data['meta'] = $this->meta;
+        }
+
+        if ($this->environment !== []) {
+            $data['environment'] = $this->environment;
+        }
 
         if ($this->artifacts !== []) {
             $data['artifacts'] = \array_map(static fn (Artifact $artifact): array => $artifact->toArray(), $this->artifacts);

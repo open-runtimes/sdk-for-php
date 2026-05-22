@@ -15,6 +15,21 @@ use PHPUnit\Framework\TestCase;
 
 final class JobRequestTest extends TestCase
 {
+    public function test_omits_empty_maps(): void
+    {
+        $request = new JobRequest('job-1', 'alpine', 'echo ok');
+
+        $this->assertSame([
+            'id' => 'job-1',
+            'image' => 'alpine',
+            'command' => 'echo ok',
+            'cpu' => 1.0,
+            'memory' => 512,
+            'timeoutSeconds' => 1800,
+            'workspace' => '/workspace',
+        ], $request->toArray());
+    }
+
     public function test_serializes_job_request_with_artifacts_and_callback(): void
     {
         $request = new JobRequest(
@@ -43,14 +58,14 @@ final class JobRequestTest extends TestCase
 
         $this->assertSame([
             'id' => 'project-deployment-build',
-            'meta' => ['projectId' => 'project'],
             'image' => 'runtime:latest',
             'command' => 'build.sh',
             'cpu' => 0.5,
             'memory' => 1024,
-            'environment' => ['A' => 'B'],
             'timeoutSeconds' => 600,
             'workspace' => '/tmp',
+            'meta' => ['projectId' => 'project'],
+            'environment' => ['A' => 'B'],
             'artifacts' => [
                 [
                     'id' => 'source',

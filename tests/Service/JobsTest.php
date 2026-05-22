@@ -34,7 +34,7 @@ final class JobsTest extends TestCase
         $this->assertSame(5000, $adapter->requests[0]['options']->getConnectTimeout());
         $this->assertFalse($adapter->requests[0]['options']->getAllowRedirects());
         $this->assertSame(OrchestratorClient::USER_AGENT, $adapter->requests[0]['options']->getUserAgent());
-        $this->assertJsonStringEqualsJsonString('{"id":"job-1","meta":[],"image":"alpine","command":"echo ok","cpu":1,"memory":512,"environment":[],"timeoutSeconds":1800,"workspace":"/workspace"}', (string) $adapter->requests[0]['body']);
+        $this->assertJsonStringEqualsJsonString('{"id":"job-1","image":"alpine","command":"echo ok","cpu":1,"memory":512,"timeoutSeconds":1800,"workspace":"/workspace"}', (string) $adapter->requests[0]['body']);
     }
 
     public function test_custom_user_agent_is_sent(): void

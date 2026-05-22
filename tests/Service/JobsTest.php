@@ -12,7 +12,6 @@ use OpenRuntimes\Orchestrator\Exception\ClientException;
 use OpenRuntimes\Orchestrator\Exception\TimeoutException;
 use OpenRuntimes\Orchestrator\Tests\Client as TestClient;
 use PHPUnit\Framework\TestCase;
-use Utopia\Fetch\Client as FetchClient;
 use Utopia\Fetch\Exception as FetchException;
 use Utopia\Fetch\Response;
 
@@ -21,7 +20,7 @@ final class JobsTest extends TestCase
     public function test_create_sends_json_and_hydrates_response(): void
     {
         $adapter = new TestClient([new Response(202, '{"id":"job-1","status":"accepted"}', [])]);
-        $jobs = new OrchestratorClient('https://orchestrator.test', apiKey: 'key', client: new FetchClient($adapter))->jobs();
+        $jobs = new OrchestratorClient('https://orchestrator.test', apiKey: 'key', adapter: $adapter)->jobs();
 
         $response = $jobs->create(new JobRequest('job-1', 'alpine', 'echo ok'), 60);
 
@@ -44,7 +43,7 @@ final class JobsTest extends TestCase
             new Response(200, '{"jobs":[{"id":"job-2","status":"running"}]}', []),
             new Response(204, '', []),
         ]);
-        $jobs = new OrchestratorClient('https://orchestrator.test/', client: new FetchClient($adapter))->jobs();
+        $jobs = new OrchestratorClient('https://orchestrator.test/', adapter: $adapter)->jobs();
 
         $status = $jobs->get('job/1');
         $list = $jobs->list();
@@ -61,7 +60,7 @@ final class JobsTest extends TestCase
     public function test_api_errors_expose_status_and_decoded_error(): void
     {
         $adapter = new TestClient([new Response(409, '{"error":"job already exists"}', [])]);
-        $jobs = new OrchestratorClient('https://orchestrator.test', client: new FetchClient($adapter))->jobs();
+        $jobs = new OrchestratorClient('https://orchestrator.test', adapter: $adapter)->jobs();
 
         $this->expectException(ApiException::class);
         $this->expectExceptionMessage('job already exists');
@@ -75,10 +74,21 @@ final class JobsTest extends TestCase
         }
     }
 
+    public function test_empty_create_response_becomes_client_exception(): void
+    {
+        $adapter = new TestClient([new Response(202, '', [])]);
+        $jobs = new OrchestratorClient('https://orchestrator.test', adapter: $adapter)->jobs();
+
+        $this->expectException(ClientException::class);
+        $this->expectExceptionMessage('Invalid job response: missing string id.');
+
+        $jobs->create(new JobRequest('job-1', 'alpine', 'echo ok'));
+    }
+
     public function test_fetch_exceptions_become_client_exceptions(): void
     {
         $adapter = new TestClient(exception: new FetchException('connection refused'));
-        $jobs = new OrchestratorClient('https://orchestrator.test', client: new FetchClient($adapter))->jobs();
+        $jobs = new OrchestratorClient('https://orchestrator.test', adapter: $adapter)->jobs();
 
         $this->expectException(ClientException::class);
         $this->expectExceptionMessage('connection refused');
@@ -88,8 +98,11 @@ final class JobsTest extends TestCase
 
     public function test_timeout_fetch_exceptions_become_timeout_exceptions(): void
     {
-        $adapter = new TestClient(exception: new FetchException('Operation timed out after 1000 milliseconds'));
-        $jobs = new OrchestratorClient('https://orchestrator.test', client: new FetchClient($adapter))->jobs();
+        $adapter = new TestClient(
+            exception: new FetchException('request failed'),
+            delayMicroseconds: 1_100_000,
+        );
+        $jobs = new OrchestratorClient('https://orchestrator.test', adapter: $adapter)->jobs();
 
         $this->expectException(TimeoutException::class);
         $this->expectExceptionMessage('Orchestrator request timed out.');

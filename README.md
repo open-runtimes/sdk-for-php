@@ -67,7 +67,7 @@ try {
 ```php
 use OpenRuntimes\Orchestrator\Callback\Signature;
 
-$valid = Signature::verify($rawBody, $headers['x-signature-256'] ?? '', $secret);
+$valid = Signature::verifyEvent($rawBody, $headers['x-signature-256'] ?? '', $secret);
 ```
 
 ## Development

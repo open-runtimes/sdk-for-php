@@ -6,7 +6,7 @@ namespace OpenRuntimes\Orchestrator;
 
 use OpenRuntimes\Orchestrator\Exception\OrchestratorException;
 use OpenRuntimes\Orchestrator\Service\Jobs;
-use Utopia\Fetch\Client as FetchClient;
+use Utopia\Fetch\Adapter;
 
 final readonly class Client
 {
@@ -18,7 +18,7 @@ final readonly class Client
         private ?string $apiKey = null,
         private int $timeoutSeconds = 30,
         private array $headers = [],
-        private ?FetchClient $client = null,
+        private ?Adapter $adapter = null,
     ) {
         if ($this->normalizedEndpoint() === '') {
             throw new OrchestratorException('Orchestrator endpoint is required.');
@@ -32,7 +32,7 @@ final readonly class Client
             apiKey: $this->apiKey,
             timeoutSeconds: $this->timeoutSeconds,
             headers: $this->headers,
-            client: $this->client ?? new FetchClient,
+            adapter: $this->adapter,
         );
     }
 

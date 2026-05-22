@@ -6,6 +6,8 @@ namespace OpenRuntimes\Orchestrator\Callback;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use Exception;
+use OpenRuntimes\Orchestrator\Exception\ClientException;
 
 final readonly class CloudEvent
 {
@@ -29,6 +31,15 @@ final readonly class CloudEvent
     public static function fromArray(array $payload): self
     {
         $data = $payload['data'] ?? [];
+        if (! isset($payload['time']) || ! \is_string($payload['time']) || $payload['time'] === '') {
+            throw new ClientException('Invalid CloudEvent: missing string time.');
+        }
+
+        try {
+            $time = new DateTimeImmutable($payload['time']);
+        } catch (Exception $e) {
+            throw new ClientException('Invalid CloudEvent: malformed time.', previous: $e);
+        }
 
         return new self(
             specVersion: (string) ($payload['specversion'] ?? ''),
@@ -36,7 +47,7 @@ final readonly class CloudEvent
             source: (string) ($payload['source'] ?? ''),
             subject: (string) ($payload['subject'] ?? ''),
             id: (string) ($payload['id'] ?? ''),
-            time: new DateTimeImmutable((string) ($payload['time'] ?? 'now')),
+            time: $time,
             dataContentType: (string) ($payload['datacontenttype'] ?? ''),
             data: \is_array($data) ? $data : [],
         );

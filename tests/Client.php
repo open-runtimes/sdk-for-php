@@ -30,6 +30,7 @@ final class Client implements Adapter
     public function __construct(
         private array $responses = [],
         private readonly ?Exception $exception = null,
+        private readonly int $delayMicroseconds = 0,
     ) {}
 
     /**
@@ -52,6 +53,10 @@ final class Client implements Adapter
             'options' => $options,
             'chunkCallback' => $chunkCallback,
         ];
+
+        if ($this->delayMicroseconds > 0) {
+            \usleep($this->delayMicroseconds);
+        }
 
         if ($this->exception instanceof Exception) {
             throw $this->exception;

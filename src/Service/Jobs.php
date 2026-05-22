@@ -12,6 +12,7 @@ use OpenRuntimes\Orchestrator\DTO\JobStatus;
 use OpenRuntimes\Orchestrator\Exception\ApiException;
 use OpenRuntimes\Orchestrator\Exception\ClientException;
 use OpenRuntimes\Orchestrator\Exception\TimeoutException;
+use Utopia\Fetch\Adapter;
 use Utopia\Fetch\Client;
 use Utopia\Fetch\Exception as FetchException;
 use Utopia\Fetch\Response;
@@ -26,12 +27,11 @@ final readonly class Jobs
         private ?string $apiKey,
         private int $timeoutSeconds,
         private array $headers,
-        private Client $client,
+        private ?Adapter $adapter = null,
     ) {}
 
     public function create(JobRequest $request, ?int $timeoutSeconds = null): JobResponse
     {
-        /** @var array{id: string, status: string} $data */
         $data = $this->json('POST', '/v1/jobs', $request->toArray(), $timeoutSeconds);
 
         return JobResponse::fromArray($data);
@@ -39,7 +39,6 @@ final readonly class Jobs
 
     public function get(string $jobId): JobStatus
     {
-        /** @var array{id: string, status: string, exitCode?: int|null, error?: string} $data */
         $data = $this->json('GET', '/v1/jobs/'.\rawurlencode($jobId));
 
         return JobStatus::fromArray($data);
@@ -47,7 +46,6 @@ final readonly class Jobs
 
     public function list(): JobList
     {
-        /** @var array{jobs: list<array{id: string, status: string, exitCode?: int|null, error?: string}>} $data */
         $data = $this->json('GET', '/v1/jobs');
 
         return JobList::fromArray($data);
@@ -95,7 +93,7 @@ final readonly class Jobs
         $timeoutMs = $timeoutSeconds * 1000;
         $connectTimeoutMs = min(5000, $timeoutMs);
 
-        $this->client->clearHeaders();
+        $client = new Client($this->adapter);
         $headers = [
             ...$this->headers,
             'Accept' => 'application/json',
@@ -107,7 +105,7 @@ final readonly class Jobs
         }
 
         foreach ($headers as $key => $value) {
-            $this->client->addHeader($key, $value);
+            $client->addHeader($key, $value);
         }
 
         $body = null;
@@ -119,8 +117,10 @@ final readonly class Jobs
             }
         }
 
+        $startedAt = \microtime(true);
+
         try {
-            return $this->client
+            return $client
                 ->setTimeout($timeoutMs)
                 ->setConnectTimeout($connectTimeoutMs)
                 ->setAllowRedirects(false)
@@ -132,7 +132,7 @@ final readonly class Jobs
                     connectTimeoutMs: $connectTimeoutMs,
                 );
         } catch (FetchException $e) {
-            if ($this->isTimeout($e->getMessage())) {
+            if ($timeoutSeconds > 0 && \microtime(true) - $startedAt >= $timeoutSeconds) {
                 throw new TimeoutException('Orchestrator request timed out.', $timeoutSeconds);
             }
 
@@ -162,14 +162,5 @@ final readonly class Jobs
         }
 
         throw new ApiException($message, $response->getStatusCode(), $body, $decoded);
-    }
-
-    private function isTimeout(string $message): bool
-    {
-        $message = \strtolower($message);
-
-        return \str_contains($message, 'timed out')
-            || \str_contains($message, 'timeout')
-            || \str_contains($message, 'operation timed out');
     }
 }

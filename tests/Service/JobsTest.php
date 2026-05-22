@@ -33,7 +33,22 @@ final class JobsTest extends TestCase
         $this->assertSame(60000, $adapter->requests[0]['options']->getTimeout());
         $this->assertSame(5000, $adapter->requests[0]['options']->getConnectTimeout());
         $this->assertFalse($adapter->requests[0]['options']->getAllowRedirects());
+        $this->assertSame(OrchestratorClient::USER_AGENT, $adapter->requests[0]['options']->getUserAgent());
         $this->assertJsonStringEqualsJsonString('{"id":"job-1","meta":[],"image":"alpine","command":"echo ok","cpu":1,"memory":512,"environment":[],"timeoutSeconds":1800,"workspace":"/workspace"}', (string) $adapter->requests[0]['body']);
+    }
+
+    public function test_custom_user_agent_is_sent(): void
+    {
+        $adapter = new TestClient([new Response(200, '{"jobs":[]}', [])]);
+        $jobs = new OrchestratorClient(
+            'https://orchestrator.test',
+            adapter: $adapter,
+            userAgent: 'custom-client/1.0',
+        )->jobs();
+
+        $jobs->list();
+
+        $this->assertSame('custom-client/1.0', $adapter->requests[0]['options']->getUserAgent());
     }
 
     public function test_get_list_and_delete_use_expected_paths(): void

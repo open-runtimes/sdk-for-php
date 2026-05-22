@@ -27,6 +27,7 @@ final readonly class Jobs
         private ?string $apiKey,
         private int $timeoutSeconds,
         private array $headers,
+        private string $userAgent,
         private ?Adapter $adapter = null,
     ) {}
 
@@ -121,6 +122,7 @@ final readonly class Jobs
 
         try {
             return $client
+                ->setUserAgent($this->userAgent)
                 ->setAllowRedirects(false)
                 ->fetch(
                     url: $this->endpoint.$path,

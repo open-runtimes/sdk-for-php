@@ -10,6 +10,8 @@ use Utopia\Fetch\Adapter;
 
 final readonly class Client
 {
+    public const string USER_AGENT = 'open-runtimes-orchestrator-client-php';
+
     /**
      * @param  array<string, string>  $headers
      */
@@ -19,6 +21,7 @@ final readonly class Client
         private int $timeoutSeconds = 30,
         private array $headers = [],
         private ?Adapter $adapter = null,
+        private string $userAgent = self::USER_AGENT,
     ) {
         if ($this->normalizedEndpoint() === '') {
             throw new OrchestratorException('Orchestrator endpoint is required.');
@@ -32,6 +35,7 @@ final readonly class Client
             apiKey: $this->apiKey,
             timeoutSeconds: $this->timeoutSeconds,
             headers: $this->headers,
+            userAgent: $this->userAgent,
             adapter: $this->adapter,
         );
     }

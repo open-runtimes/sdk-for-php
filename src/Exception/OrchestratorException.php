@@ -1,0 +1,9 @@
+<?php
+
+declare(strict_types=1);
+
+namespace OpenRuntimes\Orchestrator\Exception;
+
+use RuntimeException;
+
+class OrchestratorException extends RuntimeException {}

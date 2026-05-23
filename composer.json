@@ -1,0 +1,48 @@
+{
+    "name": "open-runtimes/orchestrator-client-php",
+    "description": "PHP SDK for the Open Runtimes orchestrator Jobs API.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.3",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "utopia-php/fetch": "^1.1"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.22",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^13.1",
+        "rector/rector": "^2.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "OpenRuntimes\\Orchestrator\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OpenRuntimes\\Orchestrator\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "format": "vendor/bin/pint",
+        "format:check": "vendor/bin/pint --test",
+        "analyze": "vendor/bin/phpstan analyze --memory-limit=512M",
+        "refactor": "vendor/bin/rector process",
+        "refactor:check": "vendor/bin/rector process --dry-run",
+        "test": "vendor/bin/phpunit",
+        "fix": [
+            "@refactor",
+            "@analyze",
+            "@format"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "php-http/discovery": false,
+            "tbachert/spi": false
+        }
+    }
+}

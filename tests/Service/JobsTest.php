@@ -89,6 +89,22 @@ final class JobsTest extends TestCase
         }
     }
 
+    public function test_redirect_responses_are_not_successful(): void
+    {
+        $adapter = new TestClient([new Response(302, '', ['Location' => 'https://orchestrator.test/login'])]);
+        $jobs = new OrchestratorClient('https://orchestrator.test', adapter: $adapter)->jobs();
+
+        $this->expectException(ApiException::class);
+        $this->expectExceptionMessage('Orchestrator request failed.');
+
+        try {
+            $jobs->delete('job-1');
+        } catch (ApiException $e) {
+            $this->assertSame(302, $e->statusCode);
+            throw $e;
+        }
+    }
+
     public function test_empty_create_response_becomes_client_exception(): void
     {
         $adapter = new TestClient([new Response(202, '', [])]);

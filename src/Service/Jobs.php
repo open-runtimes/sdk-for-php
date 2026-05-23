@@ -148,7 +148,7 @@ final readonly class Jobs
 
     private function assertSuccess(Response $response): void
     {
-        if ($response->getStatusCode() < 400) {
+        if ($response->getStatusCode() >= 200 && $response->getStatusCode() < 300) {
             return;
         }
 

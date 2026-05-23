@@ -127,12 +127,24 @@ final class JobsTest extends TestCase
         $jobs->list();
     }
 
-    public function test_timeout_fetch_exceptions_become_timeout_exceptions(): void
+    public function test_slow_non_timeout_fetch_exceptions_remain_client_exceptions(): void
     {
         $adapter = new TestClient(
-            exception: new FetchException('request failed'),
+            exception: new FetchException('connection reset'),
             delayMicroseconds: 1_100_000,
         );
+        $jobs = new OrchestratorClient('https://orchestrator.test', adapter: $adapter)->jobs();
+
+        $this->expectException(ClientException::class);
+        $this->expectExceptionMessage('connection reset');
+
+        $jobs->create(new JobRequest('job-1', 'alpine', 'echo ok'), 1);
+    }
+
+    public function test_timeout_fetch_exceptions_become_timeout_exceptions(): void
+    {
+        $exception = new FetchException('Operation timed out after 1000 milliseconds');
+        $adapter = new TestClient(exception: $exception);
         $jobs = new OrchestratorClient('https://orchestrator.test', adapter: $adapter)->jobs();
 
         $this->expectException(TimeoutException::class);
@@ -142,6 +154,7 @@ final class JobsTest extends TestCase
             $jobs->create(new JobRequest('job-1', 'alpine', 'echo ok'), 1);
         } catch (TimeoutException $e) {
             $this->assertSame(1, $e->timeoutSeconds);
+            $this->assertSame($exception, $e->getPrevious());
             throw $e;
         }
     }

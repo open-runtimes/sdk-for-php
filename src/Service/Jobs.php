@@ -124,8 +124,6 @@ final readonly class Jobs
             }
         }
 
-        $startedAt = \microtime(true);
-
         try {
             return $client
                 ->setUserAgent($this->userAgent)
@@ -138,12 +136,18 @@ final readonly class Jobs
                     connectTimeoutMs: $connectTimeoutMs,
                 );
         } catch (FetchException $e) {
-            if ($timeoutSeconds > 0 && \microtime(true) - $startedAt >= $timeoutSeconds) {
-                throw new TimeoutException('Orchestrator request timed out.', $timeoutSeconds);
+            if ($timeoutSeconds > 0 && $this->isTimeoutException($e)) {
+                throw new TimeoutException('Orchestrator request timed out.', $timeoutSeconds, $e);
             }
 
             throw new ClientException($e->getMessage(), previous: $e);
         }
+    }
+
+    private function isTimeoutException(FetchException $exception): bool
+    {
+        return \str_contains(\strtolower($exception->getMessage()), 'timed out')
+            || \str_contains(\strtolower($exception->getMessage()), 'timeout');
     }
 
     private function assertSuccess(Response $response): void

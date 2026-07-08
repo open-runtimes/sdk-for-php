@@ -19,7 +19,6 @@ final readonly class UploadArtifact implements Artifact
         public ?int $timeoutSeconds = null,
         public ?int $retries = null,
         public array $headers = [],
-        public bool $chunked = false,
     ) {}
 
     public function type(): string
@@ -44,10 +43,6 @@ final readonly class UploadArtifact implements Artifact
 
         if ($this->headers !== []) {
             $data['headers'] = $this->headers;
-        }
-
-        if ($this->chunked) {
-            $data['chunked'] = true;
         }
 
         return $data;

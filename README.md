@@ -28,7 +28,7 @@ $response = $jobs->create(
     timeoutSeconds: 300,
     artifacts: [
         new DownloadArtifact('source', 'https://example.com/source.tar.gz', 'code.tar.gz'),
-        new UploadArtifact('result', 'output.txt', 'https://example.com/upload', depends: 'job', chunked: true),
+        new UploadArtifact('result', 'output.txt', 'https://example.com/upload', depends: 'job'),
     ],
     callback: new Callback(
         url: 'https://app.example.com/orchestrator/events',

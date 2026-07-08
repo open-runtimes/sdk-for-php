@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace OpenRuntimes\Orchestrator\Tests;
 
+use OpenRuntimes\Orchestrator\Enum\ArchiveCompression;
+use OpenRuntimes\Orchestrator\Enum\ArchiveFormat;
 use OpenRuntimes\Orchestrator\Enum\CallbackEvent;
 use OpenRuntimes\Orchestrator\Enum\JobState;
 use OpenRuntimes\Orchestrator\Exception\ApiException;
@@ -13,9 +15,11 @@ use OpenRuntimes\Orchestrator\Jobs;
 use OpenRuntimes\Orchestrator\Model\Artifact\ArchiveArtifact;
 use OpenRuntimes\Orchestrator\Model\Artifact\DownloadArtifact;
 use OpenRuntimes\Orchestrator\Model\Artifact\ListArtifact;
+use OpenRuntimes\Orchestrator\Model\Artifact\MountArtifact;
 use OpenRuntimes\Orchestrator\Model\Artifact\StatArtifact;
 use OpenRuntimes\Orchestrator\Model\Artifact\UploadArtifact;
 use OpenRuntimes\Orchestrator\Model\Callback;
+use OpenRuntimes\Orchestrator\Model\Volume;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Utopia\Client\Exception\ConnectionException;
@@ -60,16 +64,19 @@ final class JobsTest extends TestCase
             environment: ['A' => 'B'],
             artifacts: [
                 new DownloadArtifact('source', 'https://example.com/source', 'code.tar.gz', headers: ['X-Appwrite-Project' => 'project']),
-                new ArchiveArtifact('build', 'build-output', 'build.tar.gz', depends: 'job'),
-                new UploadArtifact('upload', 'build.tar.gz', 'https://example.com/upload', depends: 'build', headers: ['X-Appwrite-Project' => 'project']),
+                new ArchiveArtifact('build', 'build-output', 'build.tar', format: ArchiveFormat::Tar, compression: ArchiveCompression::Gzip, level: 6, depends: 'job'),
+                new UploadArtifact('upload', 'build.tar', 'https://example.com/upload', depends: 'build', headers: ['X-Appwrite-Project' => 'project']),
                 new ListArtifact('files', 'output', recursive: false, excludes: ['node_modules'], depends: 'job'),
-                new StatArtifact('size', 'build.tar.gz', depends: 'build'),
+                new MountArtifact('layer', 'layer.squashfs', 'layers/base', depends: 'download'),
+                new StatArtifact('size', 'build.tar', depends: 'build'),
+            ],
+            volumes: [
+                new Volume('cache-vol', '/cache', subPath: 'npm', readonly: true),
             ],
             callback: new Callback(
                 url: 'https://example.com/events',
                 events: [CallbackEvent::Log, CallbackEvent::Artifact, CallbackEvent::Exit],
                 key: 'secret',
-                headers: ['X-Appwrite-Project' => 'project'],
             ),
         );
 
@@ -86,16 +93,19 @@ final class JobsTest extends TestCase
                 'environment' => ['A' => 'B'],
                 'artifacts' => [
                     ['id' => 'source', 'type' => 'download', 'in' => 'https://example.com/source', 'out' => 'code.tar.gz', 'headers' => ['X-Appwrite-Project' => 'project']],
-                    ['id' => 'build', 'type' => 'archive', 'depends' => 'job', 'in' => 'build-output', 'out' => 'build.tar.gz', 'format' => 'tar.gz'],
-                    ['id' => 'upload', 'type' => 'upload', 'depends' => 'build', 'in' => 'build.tar.gz', 'out' => 'https://example.com/upload', 'headers' => ['X-Appwrite-Project' => 'project']],
+                    ['id' => 'build', 'type' => 'archive', 'depends' => 'job', 'in' => 'build-output', 'out' => 'build.tar', 'format' => 'tar', 'compression' => 'gzip', 'level' => 6],
+                    ['id' => 'upload', 'type' => 'upload', 'depends' => 'build', 'in' => 'build.tar', 'out' => 'https://example.com/upload', 'headers' => ['X-Appwrite-Project' => 'project']],
                     ['id' => 'files', 'type' => 'list', 'depends' => 'job', 'in' => 'output', 'recursive' => false, 'excludes' => ['node_modules']],
-                    ['id' => 'size', 'type' => 'stat', 'depends' => 'build', 'in' => 'build.tar.gz'],
+                    ['id' => 'layer', 'type' => 'mount', 'depends' => 'download', 'in' => 'layer.squashfs', 'out' => 'layers/base'],
+                    ['id' => 'size', 'type' => 'stat', 'depends' => 'build', 'in' => 'build.tar'],
+                ],
+                'volumes' => [
+                    ['source' => 'cache-vol', 'path' => '/cache', 'subPath' => 'npm', 'readonly' => true],
                 ],
                 'callback' => [
                     'url' => 'https://example.com/events',
                     'events' => ['orchestrator.job.log', 'orchestrator.job.artifact', 'orchestrator.job.exit'],
                     'key' => 'secret',
-                    'headers' => ['X-Appwrite-Project' => 'project'],
                 ],
             ]),
             (string) $http->requests[0]->getBody(),

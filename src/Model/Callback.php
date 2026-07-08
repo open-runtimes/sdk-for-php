@@ -10,13 +10,11 @@ final readonly class Callback implements ArraySerializable
 {
     /**
      * @param  list<CallbackEvent|string>  $events
-     * @param  array<string, string>  $headers
      */
     public function __construct(
         public string $url,
         public array $events = [],
         public ?string $key = null,
-        public array $headers = [],
     ) {}
 
     public function toArray(): array
@@ -28,10 +26,6 @@ final readonly class Callback implements ArraySerializable
 
         if ($this->key !== null && $this->key !== '') {
             $data['key'] = $this->key;
-        }
-
-        if ($this->headers !== []) {
-            $data['headers'] = $this->headers;
         }
 
         return $data;

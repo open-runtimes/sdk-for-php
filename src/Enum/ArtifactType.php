@@ -12,6 +12,7 @@ enum ArtifactType: string
     case Read = 'read';
     case Archive = 'archive';
     case Unarchive = 'unarchive';
+    case Mount = 'mount';
     case List = 'list';
     case Stat = 'stat';
 }

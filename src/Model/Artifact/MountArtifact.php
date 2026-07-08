@@ -14,6 +14,8 @@ final readonly class MountArtifact implements Artifact
         public string $id,
         public string $in,
         public string $out,
+        public bool $writable = false,
+        public ?int $size = null,
         public ?string $depends = null,
     ) {}
 
@@ -24,9 +26,19 @@ final readonly class MountArtifact implements Artifact
 
     public function toArray(): array
     {
-        return $this->base($this->type(), $this->id, $this->depends) + [
+        $data = $this->base($this->type(), $this->id, $this->depends) + [
             'in' => $this->in,
             'out' => $this->out,
         ];
+
+        if ($this->writable) {
+            $data['writable'] = true;
+        }
+
+        if ($this->size !== null) {
+            $data['size'] = $this->size;
+        }
+
+        return $data;
     }
 }

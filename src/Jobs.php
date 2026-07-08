@@ -24,9 +24,13 @@ use Utopia\Psr7\Request\Factory as RequestFactory;
 
 final readonly class Jobs
 {
+    private RequestFactory $factory;
+
     public function __construct(
         private ClientInterface $client = new HttpClient(new CurlAdapter),
-    ) {}
+    ) {
+        $this->factory = new RequestFactory;
+    }
 
     /**
      * @param  array<string, string>  $meta
@@ -123,12 +127,10 @@ final readonly class Jobs
      */
     private function send(string $method, string $path, ?array $payload = null): ResponseInterface
     {
-        $factory = new RequestFactory;
-
         try {
             $request = $payload === null
-                ? $factory->createRequest($method, $path)
-                : $factory->json($method, $path, $payload);
+                ? $this->factory->createRequest($method, $path)
+                : $this->factory->json($method, $path, $payload);
         } catch (JsonException $e) {
             throw new ClientException("Failed to encode orchestrator request: {$e->getMessage()}");
         }

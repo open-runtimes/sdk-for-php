@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace OpenRuntimes\Orchestrator\DTO;
+namespace OpenRuntimes\Orchestrator\Model;
 
 use OpenRuntimes\Orchestrator\Enum\JobState;
 use OpenRuntimes\Orchestrator\Exception\ClientException;
 
-final readonly class JobResponse
+final readonly class JobCreated
 {
     public function __construct(
         public string $id,

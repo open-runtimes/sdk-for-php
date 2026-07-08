@@ -8,7 +8,7 @@ use Throwable;
 
 final class TimeoutException extends ClientException
 {
-    public function __construct(string $message, public readonly int $timeoutSeconds, ?Throwable $previous = null)
+    public function __construct(string $message = 'Orchestrator request timed out.', ?Throwable $previous = null)
     {
         parent::__construct($message, previous: $previous);
     }

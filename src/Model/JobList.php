@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace OpenRuntimes\Orchestrator\DTO;
+namespace OpenRuntimes\Orchestrator\Model;
 
 use OpenRuntimes\Orchestrator\Exception\ClientException;
 

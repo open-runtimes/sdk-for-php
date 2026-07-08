@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace OpenRuntimes\Orchestrator\DTO\Artifact;
+namespace OpenRuntimes\Orchestrator\Model\Artifact;
 
-use OpenRuntimes\Orchestrator\DTO\ArraySerializable;
+use OpenRuntimes\Orchestrator\Model\ArraySerializable;
 
 interface Artifact extends ArraySerializable
 {

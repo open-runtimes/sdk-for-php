@@ -5,19 +5,21 @@ PHP SDK for the Open Runtimes orchestrator Jobs API.
 Server: https://github.com/open-runtimes/orchestrator
 
 ```php
-use OpenRuntimes\Orchestrator\DTO\Artifact\DownloadArtifact;
-use OpenRuntimes\Orchestrator\DTO\Artifact\UploadArtifact;
-use OpenRuntimes\Orchestrator\DTO\Callback;
-use OpenRuntimes\Orchestrator\DTO\JobRequest;
 use OpenRuntimes\Orchestrator\Enum\CallbackEvent;
-use OpenRuntimes\Orchestrator\Client as OrchestratorClient;
+use OpenRuntimes\Orchestrator\Jobs;
+use OpenRuntimes\Orchestrator\Model\Artifact\DownloadArtifact;
+use OpenRuntimes\Orchestrator\Model\Artifact\UploadArtifact;
+use OpenRuntimes\Orchestrator\Model\Callback;
+use Utopia\Client;
+use Utopia\Client\Adapter\Curl\Client as CurlAdapter;
 
-$client = new OrchestratorClient(
-    endpoint: 'http://localhost:8080',
-    apiKey: 'secret',
-);
+$http = new Client(new CurlAdapter())
+    ->withBaseUri('http://localhost:8080')
+    ->withBearerAuth('secret');
 
-$response = $client->jobs()->create(new JobRequest(
+$jobs = new Jobs($http);
+
+$response = $jobs->create(
     id: 'build-001',
     image: 'alpine:latest',
     command: 'sh -c "echo hello > /workspace/output.txt"',
@@ -33,15 +35,13 @@ $response = $client->jobs()->create(new JobRequest(
         events: [CallbackEvent::Log, CallbackEvent::Artifact, CallbackEvent::Exit],
         key: 'webhook-secret',
     ),
-));
+);
 ```
 
 ## Jobs
 
 ```php
-$jobs = $client->jobs();
-
-$created = $jobs->create($request);
+$created = $jobs->create(id: 'build-001', image: 'alpine:latest', command: 'echo hello');
 $status = $jobs->get('build-001');
 $list = $jobs->list();
 $jobs->delete('build-001');
@@ -55,7 +55,7 @@ API responses with status `>= 400` throw `ApiException` with `statusCode`, raw `
 use OpenRuntimes\Orchestrator\Exception\ApiException;
 
 try {
-    $client->jobs()->get('missing');
+    $jobs->get('missing');
 } catch (ApiException $e) {
     echo $e->statusCode;
     echo $e->getMessage();

@@ -13,7 +13,7 @@ You are an expert PHP SDK engineer for this project.
 
 ## Project knowledge
 
-- **Tech Stack:** PHP 8.5, Composer, Utopia Fetch, PHPUnit, PHPStan, Rector, Pint
+- **Tech Stack:** PHP 8.5, Composer, Utopia Client, PHPUnit, PHPStan, Rector, Pint
 - **Package:** `open-runtimes/orchestrator-client-php`
 - **File Structure:**
   - `src/` - SDK source code
@@ -34,9 +34,9 @@ You are an expert PHP SDK engineer for this project.
 
 - Be concise, specific, and value dense
 - Use strict types and typed readonly DTOs
-- Import the SDK client as `OpenRuntimes\Orchestrator\Client as OrchestratorClient` at call sites
-- Use `Utopia\Fetch\Client` directly for HTTP
-- Keep tests network-free by injecting `tests/Client.php` as a Utopia Fetch adapter
+- The SDK entry point is `OpenRuntimes\Orchestrator\Jobs`; inject a configured `Utopia\Client` (PSR-18) into its constructor
+- Use `Utopia\Client` directly for HTTP
+- Keep tests network-free by injecting `tests/Client.php` (a PSR-18 client double) into `Jobs`
 - Prefer global namespace calls for PHP built-in functions, for example `\is_array(...)`
 - Prefer array spread over `\array_merge(...)` for simple array composition
 

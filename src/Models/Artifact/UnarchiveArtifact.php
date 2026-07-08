@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace OpenRuntimes\Orchestrator\DTO\Artifact;
+namespace OpenRuntimes\Orchestrator\Models\Artifact;
 
 final readonly class UnarchiveArtifact implements Artifact
 {

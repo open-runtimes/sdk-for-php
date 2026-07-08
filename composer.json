@@ -4,10 +4,10 @@
     "type": "library",
     "license": "MIT",
     "require": {
-        "php": ">=8.3",
+        "php": ">=8.4",
         "ext-curl": "*",
         "ext-json": "*",
-        "utopia-php/fetch": "^1.1"
+        "utopia-php/client": "^0.2.2"
     },
     "require-dev": {
         "laravel/pint": "^1.22",

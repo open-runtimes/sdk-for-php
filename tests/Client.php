@@ -4,64 +4,38 @@ declare(strict_types=1);
 
 namespace OpenRuntimes\Orchestrator\Tests;
 
-use Utopia\Fetch\Adapter;
-use Utopia\Fetch\Chunk;
-use Utopia\Fetch\Exception;
-use Utopia\Fetch\Options\Request as RequestOptions;
-use Utopia\Fetch\Response;
+use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Utopia\Psr7\Response;
+use Utopia\Psr7\Stream;
 
-final class Client implements Adapter
+/**
+ * Network-free PSR-18 client test double: it records the requests it receives and
+ * returns preset responses (or throws) instead of dialling out.
+ */
+final class Client implements ClientInterface
 {
-    /**
-     * @var list<array{
-     *     url: string,
-     *     method: string,
-     *     body: mixed,
-     *     headers: array<string, string>,
-     *     options: RequestOptions,
-     *     chunkCallback: callable(Chunk): mixed|null
-     * }>
-     */
+    /** @var list<RequestInterface> */
     public array $requests = [];
 
     /**
-     * @param  list<Response>  $responses
+     * @param  list<ResponseInterface>  $responses
      */
     public function __construct(
         private array $responses = [],
-        private readonly ?Exception $exception = null,
-        private readonly int $delayMicroseconds = 0,
+        private readonly ?ClientExceptionInterface $exception = null,
     ) {}
 
-    /**
-     * @param  array<string, string>  $headers
-     * @param  callable(Chunk): mixed|null  $chunkCallback
-     */
-    public function send(
-        string $url,
-        string $method,
-        mixed $body,
-        array $headers,
-        RequestOptions $options,
-        ?callable $chunkCallback = null
-    ): Response {
-        $this->requests[] = [
-            'url' => $url,
-            'method' => $method,
-            'body' => $body,
-            'headers' => $headers,
-            'options' => $options,
-            'chunkCallback' => $chunkCallback,
-        ];
+    public function sendRequest(RequestInterface $request): ResponseInterface
+    {
+        $this->requests[] = $request;
 
-        if ($this->delayMicroseconds > 0) {
-            \usleep($this->delayMicroseconds);
-        }
-
-        if ($this->exception instanceof Exception) {
+        if ($this->exception instanceof ClientExceptionInterface) {
             throw $this->exception;
         }
 
-        return \array_shift($this->responses) ?? new Response(500, '{"error":"missing fake response"}', []);
+        return \array_shift($this->responses) ?? new Response(500, body: new Stream('{"error":"missing fake response"}'));
     }
 }

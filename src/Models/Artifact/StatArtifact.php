@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace OpenRuntimes\Orchestrator\DTO\Artifact;
+namespace OpenRuntimes\Orchestrator\Models\Artifact;
 
-final readonly class ReadArtifact implements Artifact
+final readonly class StatArtifact implements Artifact
 {
     use ArtifactFields;
 
@@ -16,7 +16,7 @@ final readonly class ReadArtifact implements Artifact
 
     public function type(): string
     {
-        return 'read';
+        return 'stat';
     }
 
     public function toArray(): array

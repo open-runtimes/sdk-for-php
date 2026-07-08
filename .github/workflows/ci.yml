@@ -20,7 +20,7 @@ jobs:
           extensions: curl, json
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+        run: composer install --prefer-dist --no-progress --ignore-platform-req=ext-opentelemetry --ignore-platform-req=ext-protobuf
 
       - name: Format
         run: composer format:check
@@ -39,7 +39,7 @@ jobs:
           extensions: curl, json
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+        run: composer install --prefer-dist --no-progress --ignore-platform-req=ext-opentelemetry --ignore-platform-req=ext-protobuf
 
       - name: Rector
         run: composer refactor:check
@@ -58,7 +58,7 @@ jobs:
           extensions: curl, json
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+        run: composer install --prefer-dist --no-progress --ignore-platform-req=ext-opentelemetry --ignore-platform-req=ext-protobuf
 
       - name: PHPStan
         run: composer analyze
@@ -77,7 +77,7 @@ jobs:
           extensions: curl, json
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
+        run: composer install --prefer-dist --no-progress --ignore-platform-req=ext-opentelemetry --ignore-platform-req=ext-protobuf
 
       - name: PHPUnit
         run: composer test

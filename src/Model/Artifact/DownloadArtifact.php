@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace OpenRuntimes\Orchestrator\Model\Artifact;
 
+use OpenRuntimes\Orchestrator\Enum\ArtifactType;
+
 final readonly class DownloadArtifact implements Artifact
 {
     use ArtifactFields;
@@ -20,9 +22,9 @@ final readonly class DownloadArtifact implements Artifact
         public array $headers = [],
     ) {}
 
-    public function type(): string
+    public function type(): ArtifactType
     {
-        return 'download';
+        return ArtifactType::Download;
     }
 
     public function toArray(): array

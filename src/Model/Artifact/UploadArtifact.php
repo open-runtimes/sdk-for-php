@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace OpenRuntimes\Orchestrator\Model\Artifact;
 
+use OpenRuntimes\Orchestrator\Enum\ArtifactType;
+
 final readonly class UploadArtifact implements Artifact
 {
     use ArtifactFields;
@@ -19,12 +21,11 @@ final readonly class UploadArtifact implements Artifact
         public ?int $timeoutSeconds = null,
         public ?int $retries = null,
         public array $headers = [],
-        public bool $chunked = false,
     ) {}
 
-    public function type(): string
+    public function type(): ArtifactType
     {
-        return 'upload';
+        return ArtifactType::Upload;
     }
 
     public function toArray(): array
@@ -44,10 +45,6 @@ final readonly class UploadArtifact implements Artifact
 
         if ($this->headers !== []) {
             $data['headers'] = $this->headers;
-        }
-
-        if ($this->chunked) {
-            $data['chunked'] = true;
         }
 
         return $data;

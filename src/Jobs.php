@@ -13,6 +13,7 @@ use OpenRuntimes\Orchestrator\Model\Callback;
 use OpenRuntimes\Orchestrator\Model\JobCreated;
 use OpenRuntimes\Orchestrator\Model\JobList;
 use OpenRuntimes\Orchestrator\Model\JobStatus;
+use OpenRuntimes\Orchestrator\Model\Volume;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -36,6 +37,7 @@ final readonly class Jobs
      * @param  array<string, string>  $meta
      * @param  array<string, string>  $environment
      * @param  list<Artifact>  $artifacts
+     * @param  list<Volume>  $volumes
      */
     public function create(
         string $id,
@@ -48,6 +50,7 @@ final readonly class Jobs
         array $meta = [],
         array $environment = [],
         array $artifacts = [],
+        array $volumes = [],
         ?Callback $callback = null,
     ): JobCreated {
         $payload = [
@@ -70,6 +73,10 @@ final readonly class Jobs
 
         if ($artifacts !== []) {
             $payload['artifacts'] = \array_map(static fn (Artifact $artifact): array => $artifact->toArray(), $artifacts);
+        }
+
+        if ($volumes !== []) {
+            $payload['volumes'] = \array_map(static fn (Volume $volume): array => $volume->toArray(), $volumes);
         }
 
         if ($callback instanceof Callback) {

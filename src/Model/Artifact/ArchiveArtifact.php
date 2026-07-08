@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace OpenRuntimes\Orchestrator\Model\Artifact;
 
+use OpenRuntimes\Orchestrator\Enum\ArchiveCompression;
+use OpenRuntimes\Orchestrator\Enum\ArchiveFormat;
+use OpenRuntimes\Orchestrator\Enum\ArtifactType;
+
 final readonly class ArchiveArtifact implements Artifact
 {
     use ArtifactFields;
@@ -12,21 +16,33 @@ final readonly class ArchiveArtifact implements Artifact
         public string $id,
         public string $in,
         public string $out,
-        public string $format = 'tar.gz',
+        public ArchiveFormat $format = ArchiveFormat::Tar,
+        public ?ArchiveCompression $compression = null,
+        public ?int $level = null,
         public ?string $depends = null,
     ) {}
 
-    public function type(): string
+    public function type(): ArtifactType
     {
-        return 'archive';
+        return ArtifactType::Archive;
     }
 
     public function toArray(): array
     {
-        return $this->base($this->type(), $this->id, $this->depends) + [
+        $data = $this->base($this->type(), $this->id, $this->depends) + [
             'in' => $this->in,
             'out' => $this->out,
-            'format' => $this->format,
+            'format' => $this->format->value,
         ];
+
+        if ($this->compression instanceof ArchiveCompression) {
+            $data['compression'] = $this->compression->value;
+        }
+
+        if ($this->level !== null) {
+            $data['level'] = $this->level;
+        }
+
+        return $data;
     }
 }

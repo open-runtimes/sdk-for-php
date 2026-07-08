@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace OpenRuntimes\Orchestrator\Models;
+namespace OpenRuntimes\Orchestrator\Model;
 
 use OpenRuntimes\Orchestrator\Enum\JobState;
 use OpenRuntimes\Orchestrator\Exception\ClientException;

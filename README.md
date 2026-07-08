@@ -7,9 +7,9 @@ Server: https://github.com/open-runtimes/orchestrator
 ```php
 use OpenRuntimes\Orchestrator\Enum\CallbackEvent;
 use OpenRuntimes\Orchestrator\Jobs;
-use OpenRuntimes\Orchestrator\Models\Artifact\DownloadArtifact;
-use OpenRuntimes\Orchestrator\Models\Artifact\UploadArtifact;
-use OpenRuntimes\Orchestrator\Models\Callback;
+use OpenRuntimes\Orchestrator\Model\Artifact\DownloadArtifact;
+use OpenRuntimes\Orchestrator\Model\Artifact\UploadArtifact;
+use OpenRuntimes\Orchestrator\Model\Callback;
 use Utopia\Client;
 use Utopia\Client\Adapter\Curl\Client as CurlAdapter;
 

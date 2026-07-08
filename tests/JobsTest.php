@@ -67,7 +67,8 @@ final class JobsTest extends TestCase
                 new ArchiveArtifact('build', 'build-output', 'build.tar', format: ArchiveFormat::Tar, compression: ArchiveCompression::Gzip, level: 6, depends: 'job'),
                 new UploadArtifact('upload', 'build.tar', 'https://example.com/upload', depends: 'build', headers: ['X-Appwrite-Project' => 'project']),
                 new ListArtifact('files', 'output', recursive: false, excludes: ['node_modules'], depends: 'job'),
-                new MountArtifact('layer', 'layer.squashfs', 'layers/base', depends: 'download'),
+                new MountArtifact('layer', 'layer.squashfs', 'layers/base', writable: true, size: 512, depends: 'download'),
+                new MountArtifact('readonly', 'ro.squashfs', 'layers/ro'),
                 new StatArtifact('size', 'build.tar', depends: 'build'),
             ],
             volumes: [
@@ -96,7 +97,8 @@ final class JobsTest extends TestCase
                     ['id' => 'build', 'type' => 'archive', 'depends' => 'job', 'in' => 'build-output', 'out' => 'build.tar', 'format' => 'tar', 'compression' => 'gzip', 'level' => 6],
                     ['id' => 'upload', 'type' => 'upload', 'depends' => 'build', 'in' => 'build.tar', 'out' => 'https://example.com/upload', 'headers' => ['X-Appwrite-Project' => 'project']],
                     ['id' => 'files', 'type' => 'list', 'depends' => 'job', 'in' => 'output', 'recursive' => false, 'excludes' => ['node_modules']],
-                    ['id' => 'layer', 'type' => 'mount', 'depends' => 'download', 'in' => 'layer.squashfs', 'out' => 'layers/base'],
+                    ['id' => 'layer', 'type' => 'mount', 'depends' => 'download', 'in' => 'layer.squashfs', 'out' => 'layers/base', 'writable' => true, 'size' => 512],
+                    ['id' => 'readonly', 'type' => 'mount', 'in' => 'ro.squashfs', 'out' => 'layers/ro'],
                     ['id' => 'size', 'type' => 'stat', 'depends' => 'build', 'in' => 'build.tar'],
                 ],
                 'volumes' => [

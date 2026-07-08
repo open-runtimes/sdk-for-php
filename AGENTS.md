@@ -14,7 +14,7 @@ You are an expert PHP SDK engineer for this project.
 ## Project knowledge
 
 - **Tech Stack:** PHP 8.5, Composer, Utopia Client, PHPUnit, PHPStan, Rector, Pint
-- **Package:** `open-runtimes/orchestrator-client-php`
+- **Package:** `open-runtimes/sdk-for-php`
 - **File Structure:**
   - `src/` - SDK source code
   - `tests/` - Unit tests and test helpers

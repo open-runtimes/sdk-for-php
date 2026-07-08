@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace OpenRuntimes\Orchestrator\Model\Artifact;
 
+use OpenRuntimes\Orchestrator\Enum\ArtifactType;
+
 final readonly class UploadArtifact implements Artifact
 {
     use ArtifactFields;
@@ -21,9 +23,9 @@ final readonly class UploadArtifact implements Artifact
         public array $headers = [],
     ) {}
 
-    public function type(): string
+    public function type(): ArtifactType
     {
-        return 'upload';
+        return ArtifactType::Upload;
     }
 
     public function toArray(): array

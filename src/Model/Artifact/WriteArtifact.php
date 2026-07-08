@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace OpenRuntimes\Orchestrator\Model\Artifact;
 
+use OpenRuntimes\Orchestrator\Enum\ArtifactType;
+
 final readonly class WriteArtifact implements Artifact
 {
     use ArtifactFields;
@@ -15,9 +17,9 @@ final readonly class WriteArtifact implements Artifact
         public ?string $depends = null,
     ) {}
 
-    public function type(): string
+    public function type(): ArtifactType
     {
-        return 'write';
+        return ArtifactType::Write;
     }
 
     public function toArray(): array

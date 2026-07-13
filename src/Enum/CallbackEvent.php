@@ -10,4 +10,5 @@ enum CallbackEvent: string
     case Artifact = 'orchestrator.job.artifact';
     case Log = 'orchestrator.job.log';
     case Exit = 'orchestrator.job.exit';
+    case Complete = 'orchestrator.job.complete';
 }

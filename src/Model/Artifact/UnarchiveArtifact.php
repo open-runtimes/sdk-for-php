@@ -15,6 +15,7 @@ final readonly class UnarchiveArtifact implements Artifact
         public string $in,
         public string $out,
         public ?string $subdir = null,
+        public bool $strip = false,
         public ?string $depends = null,
     ) {}
 
@@ -32,6 +33,10 @@ final readonly class UnarchiveArtifact implements Artifact
 
         if ($this->subdir !== null && $this->subdir !== '') {
             $data['subdir'] = $this->subdir;
+        }
+
+        if ($this->strip) {
+            $data['strip'] = true;
         }
 
         return $data;

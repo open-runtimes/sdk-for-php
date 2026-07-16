@@ -17,6 +17,7 @@ use OpenRuntimes\Orchestrator\Model\Artifact\DownloadArtifact;
 use OpenRuntimes\Orchestrator\Model\Artifact\ListArtifact;
 use OpenRuntimes\Orchestrator\Model\Artifact\MountArtifact;
 use OpenRuntimes\Orchestrator\Model\Artifact\StatArtifact;
+use OpenRuntimes\Orchestrator\Model\Artifact\UnarchiveArtifact;
 use OpenRuntimes\Orchestrator\Model\Artifact\UploadArtifact;
 use OpenRuntimes\Orchestrator\Model\Callback;
 use OpenRuntimes\Orchestrator\Model\Volume;
@@ -64,6 +65,7 @@ final class JobsTest extends TestCase
             environment: ['A' => 'B'],
             artifacts: [
                 new DownloadArtifact('source', 'https://example.com/source', 'code.tar.gz', headers: ['X-Appwrite-Project' => 'project']),
+                new UnarchiveArtifact('extract', 'code.tar.gz', 'source', subdir: 'functions/node', strip: true, depends: 'source'),
                 new ArchiveArtifact('build', 'build-output', 'build.tar', format: ArchiveFormat::Tar, compression: ArchiveCompression::Gzip, level: 6, depends: 'job'),
                 new UploadArtifact('upload', 'build.tar', 'https://example.com/upload', depends: 'build', headers: ['X-Appwrite-Project' => 'project']),
                 new ListArtifact('files', 'output', recursive: false, excludes: ['node_modules'], depends: 'job'),
@@ -94,6 +96,7 @@ final class JobsTest extends TestCase
                 'environment' => ['A' => 'B'],
                 'artifacts' => [
                     ['id' => 'source', 'type' => 'download', 'in' => 'https://example.com/source', 'out' => 'code.tar.gz', 'headers' => ['X-Appwrite-Project' => 'project']],
+                    ['id' => 'extract', 'type' => 'unarchive', 'depends' => 'source', 'in' => 'code.tar.gz', 'out' => 'source', 'subdir' => 'functions/node', 'strip' => true],
                     ['id' => 'build', 'type' => 'archive', 'depends' => 'job', 'in' => 'build-output', 'out' => 'build.tar', 'format' => 'tar', 'compression' => 'gzip', 'level' => 6],
                     ['id' => 'upload', 'type' => 'upload', 'depends' => 'build', 'in' => 'build.tar', 'out' => 'https://example.com/upload', 'headers' => ['X-Appwrite-Project' => 'project']],
                     ['id' => 'files', 'type' => 'list', 'depends' => 'job', 'in' => 'output', 'recursive' => false, 'excludes' => ['node_modules']],

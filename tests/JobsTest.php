@@ -8,6 +8,7 @@ use OpenRuntimes\Orchestrator\Enum\ArchiveCompression;
 use OpenRuntimes\Orchestrator\Enum\ArchiveFormat;
 use OpenRuntimes\Orchestrator\Enum\CallbackEvent;
 use OpenRuntimes\Orchestrator\Enum\JobState;
+use OpenRuntimes\Orchestrator\Enum\ReadFormat;
 use OpenRuntimes\Orchestrator\Exception\ApiException;
 use OpenRuntimes\Orchestrator\Exception\ClientException;
 use OpenRuntimes\Orchestrator\Exception\TimeoutException;
@@ -16,6 +17,7 @@ use OpenRuntimes\Orchestrator\Model\Artifact\ArchiveArtifact;
 use OpenRuntimes\Orchestrator\Model\Artifact\DownloadArtifact;
 use OpenRuntimes\Orchestrator\Model\Artifact\ListArtifact;
 use OpenRuntimes\Orchestrator\Model\Artifact\MountArtifact;
+use OpenRuntimes\Orchestrator\Model\Artifact\ReadArtifact;
 use OpenRuntimes\Orchestrator\Model\Artifact\StatArtifact;
 use OpenRuntimes\Orchestrator\Model\Artifact\UnarchiveArtifact;
 use OpenRuntimes\Orchestrator\Model\Artifact\UploadArtifact;
@@ -72,6 +74,8 @@ final class JobsTest extends TestCase
                 new MountArtifact('layer', 'layer.squashfs', 'layers/base', writable: true, size: 512, depends: 'download'),
                 new MountArtifact('readonly', 'ro.squashfs', 'layers/ro'),
                 new StatArtifact('size', 'build.tar', depends: 'build'),
+                new ReadArtifact('manifest', 'manifest.json', format: ReadFormat::Json, depends: 'job'),
+                new ReadArtifact('log', 'build.log', depends: 'job'),
             ],
             volumes: [
                 new Volume('cache-vol', '/cache', subPath: 'npm', readonly: true),
@@ -103,6 +107,8 @@ final class JobsTest extends TestCase
                     ['id' => 'layer', 'type' => 'mount', 'depends' => 'download', 'in' => 'layer.squashfs', 'out' => 'layers/base', 'writable' => true, 'size' => 512],
                     ['id' => 'readonly', 'type' => 'mount', 'in' => 'ro.squashfs', 'out' => 'layers/ro'],
                     ['id' => 'size', 'type' => 'stat', 'depends' => 'build', 'in' => 'build.tar'],
+                    ['id' => 'manifest', 'type' => 'read', 'depends' => 'job', 'in' => 'manifest.json', 'format' => 'json'],
+                    ['id' => 'log', 'type' => 'read', 'depends' => 'job', 'in' => 'build.log'],
                 ],
                 'volumes' => [
                     ['source' => 'cache-vol', 'path' => '/cache', 'subPath' => 'npm', 'readonly' => true],

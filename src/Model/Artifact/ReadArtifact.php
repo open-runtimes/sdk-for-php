@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OpenRuntimes\Orchestrator\Model\Artifact;
 
 use OpenRuntimes\Orchestrator\Enum\ArtifactType;
+use OpenRuntimes\Orchestrator\Enum\ReadFormat;
 
 final readonly class ReadArtifact implements Artifact
 {
@@ -13,6 +14,7 @@ final readonly class ReadArtifact implements Artifact
     public function __construct(
         public string $id,
         public string $in,
+        public ?ReadFormat $format = null,
         public ?string $depends = null,
     ) {}
 
@@ -23,8 +25,14 @@ final readonly class ReadArtifact implements Artifact
 
     public function toArray(): array
     {
-        return $this->base($this->type(), $this->id, $this->depends) + [
+        $data = $this->base($this->type(), $this->id, $this->depends) + [
             'in' => $this->in,
         ];
+
+        if ($this->format instanceof ReadFormat) {
+            $data['format'] = $this->format->value;
+        }
+
+        return $data;
     }
 }

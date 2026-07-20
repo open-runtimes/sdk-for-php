@@ -8,4 +8,5 @@ enum ArchiveFormat: string
 {
     case Tar = 'tar';
     case Squashfs = 'squashfs';
+    case Erofs = 'erofs';
 }

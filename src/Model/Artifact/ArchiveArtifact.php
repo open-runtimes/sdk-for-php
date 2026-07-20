@@ -19,6 +19,7 @@ final readonly class ArchiveArtifact implements Artifact
         public ArchiveFormat $format = ArchiveFormat::Tar,
         public ?ArchiveCompression $compression = null,
         public ?int $level = null,
+        public ?int $blockSize = null,
         public ?string $depends = null,
     ) {}
 
@@ -41,6 +42,10 @@ final readonly class ArchiveArtifact implements Artifact
 
         if ($this->level !== null) {
             $data['level'] = $this->level;
+        }
+
+        if ($this->blockSize !== null) {
+            $data['blockSize'] = $this->blockSize;
         }
 
         return $data;

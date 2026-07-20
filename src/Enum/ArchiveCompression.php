@@ -9,4 +9,5 @@ enum ArchiveCompression: string
     case None = 'none';
     case Gzip = 'gzip';
     case Zstd = 'zstd';
+    case Lz4 = 'lz4';
 }

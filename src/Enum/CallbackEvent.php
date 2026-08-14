@@ -11,4 +11,6 @@ enum CallbackEvent: string
     case Log = 'orchestrator.job.log';
     case Exit = 'orchestrator.job.exit';
     case Complete = 'orchestrator.job.complete';
+    case DeploymentResponse = 'orchestrator.deployment.response';
+    case PoolActivationResult = 'orchestrator.pool.activation.result';
 }

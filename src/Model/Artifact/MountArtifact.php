@@ -17,6 +17,8 @@ final readonly class MountArtifact implements Artifact
         public bool $writable = false,
         public ?int $size = null,
         public ?string $depends = null,
+        public ?string $sync = null,
+        public ?int $syncIntervalSeconds = null,
     ) {}
 
     public function type(): ArtifactType
@@ -37,6 +39,14 @@ final readonly class MountArtifact implements Artifact
 
         if ($this->size !== null) {
             $data['size'] = $this->size;
+        }
+
+        if ($this->sync !== null && $this->sync !== '') {
+            $data['sync'] = $this->sync;
+        }
+
+        if ($this->syncIntervalSeconds !== null) {
+            $data['syncIntervalSeconds'] = $this->syncIntervalSeconds;
         }
 
         return $data;

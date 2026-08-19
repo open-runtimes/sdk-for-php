@@ -7,6 +7,7 @@ namespace OpenRuntimes\Orchestrator\Enum;
 enum ArtifactType: string
 {
     case Download = 'download';
+    case Clone = 'clone';
     case Upload = 'upload';
     case Write = 'write';
     case Read = 'read';

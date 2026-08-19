@@ -14,6 +14,7 @@ use OpenRuntimes\Orchestrator\Exception\ClientException;
 use OpenRuntimes\Orchestrator\Exception\TimeoutException;
 use OpenRuntimes\Orchestrator\Jobs;
 use OpenRuntimes\Orchestrator\Model\Artifact\ArchiveArtifact;
+use OpenRuntimes\Orchestrator\Model\Artifact\CloneArtifact;
 use OpenRuntimes\Orchestrator\Model\Artifact\DownloadArtifact;
 use OpenRuntimes\Orchestrator\Model\Artifact\ListArtifact;
 use OpenRuntimes\Orchestrator\Model\Artifact\MountArtifact;
@@ -67,6 +68,7 @@ final class JobsTest extends TestCase
             environment: ['A' => 'B'],
             artifacts: [
                 new DownloadArtifact('source', 'https://example.com/source', 'code.tar.gz', headers: ['X-Appwrite-Project' => 'project']),
+                new CloneArtifact('repo', 'https://git.example.com/acme/app.git', 'src', ref: 'main', subdir: 'packages/web', headers: ['Authorization' => 'Bearer token']),
                 new UnarchiveArtifact('extract', 'code.tar.gz', 'source', subdir: 'functions/node', strip: true, depends: 'source'),
                 new ArchiveArtifact('build', 'build-output', 'build.tar', format: ArchiveFormat::Tar, compression: ArchiveCompression::Gzip, level: 6, depends: 'job'),
                 new ArchiveArtifact('cache', 'stores', 'stores.sqfs', format: ArchiveFormat::Squashfs, compression: ArchiveCompression::Lz4, blockSize: 1048576, depends: 'job'),
@@ -103,6 +105,7 @@ final class JobsTest extends TestCase
                 'environment' => ['A' => 'B'],
                 'artifacts' => [
                     ['id' => 'source', 'type' => 'download', 'in' => 'https://example.com/source', 'out' => 'code.tar.gz', 'headers' => ['X-Appwrite-Project' => 'project']],
+                    ['id' => 'repo', 'type' => 'clone', 'in' => 'https://git.example.com/acme/app.git', 'out' => 'src', 'ref' => 'main', 'subdir' => 'packages/web', 'headers' => ['Authorization' => 'Bearer token']],
                     ['id' => 'extract', 'type' => 'unarchive', 'depends' => 'source', 'in' => 'code.tar.gz', 'out' => 'source', 'subdir' => 'functions/node', 'strip' => true],
                     ['id' => 'build', 'type' => 'archive', 'depends' => 'job', 'in' => 'build-output', 'out' => 'build.tar', 'format' => 'tar', 'compression' => 'gzip', 'level' => 6],
                     ['id' => 'cache', 'type' => 'archive', 'depends' => 'job', 'in' => 'stores', 'out' => 'stores.sqfs', 'format' => 'squashfs', 'compression' => 'lz4', 'blockSize' => 1048576],

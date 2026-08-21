@@ -155,6 +155,11 @@ sandbox, at the address in `$sandbox->url` — read secondary ports out of
 **Treat those URLs as secrets.** Reaching one is sufficient to run commands in the
 sandbox, which is why the hostname carries an unguessable token instead of the id.
 
+A read tells you what the sandbox is, not just where it is: `$sandbox->image`,
+`$sandbox->cpu`, and `$sandbox->memory` are the shape it is running in, recorded
+when its pod was created, so you never have to keep a record of what you asked
+for. They are null for a sandbox created before the orchestrator recorded it.
+
 A sandbox that fails to materialize is not an error response: `create()` returns a
 status with `SandboxState::Failed` and an `error`, because the sandbox exists as a
 record you can read and delete.

@@ -72,6 +72,23 @@ final readonly class Data
 
     /**
      * @param  array<string, mixed>  $data
+     */
+    public static function optionalFloat(array $data, string $key, string $context): ?float
+    {
+        $value = $data[$key] ?? null;
+        if ($value === null) {
+            return null;
+        }
+
+        if (! \is_float($value) && ! \is_int($value)) {
+            throw new ClientException("Invalid {$context}: {$key} must be a number.");
+        }
+
+        return (float) $value;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
      * @return list<string>
      */
     public static function strings(array $data, string $key, string $context): array

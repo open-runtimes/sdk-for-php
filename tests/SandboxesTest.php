@@ -109,6 +109,28 @@ final class SandboxesTest extends TestCase
         $this->assertNull($sandbox->url);
     }
 
+    public function test_a_read_reports_the_shape_the_sandbox_runs_in(): void
+    {
+        $http = new Client([
+            new Response(200, body: new Stream(
+                '{"id":"py-1","poolId":"py","status":"ready","image":"python:3.12-slim","cpu":2,"memory":2048}'
+            )),
+            new Response(200, body: new Stream('{"id":"old-1","status":"ready"}')),
+        ]);
+        $sandboxes = new Sandboxes($http);
+
+        $sandbox = $sandboxes->get('py-1');
+        $this->assertSame('python:3.12-slim', $sandbox->image);
+        $this->assertEqualsWithDelta(2.0, $sandbox->cpu, PHP_FLOAT_EPSILON);
+        $this->assertSame(2048, $sandbox->memory);
+
+        // A sandbox created before the orchestrator recorded a shape reports none.
+        $legacy = $sandboxes->get('old-1');
+        $this->assertNull($legacy->image);
+        $this->assertNull($legacy->cpu);
+        $this->assertNull($legacy->memory);
+    }
+
     public function test_get_list_and_delete(): void
     {
         $http = new Client([

@@ -15,6 +15,8 @@ final readonly class SandboxStatus
 {
     /**
      * @param  array<string, string>  $urls  Every port the sandbox serves, keyed by port number.
+     * @param  string|null  $image  The shape it is running in, recorded when its pod was created.
+     *                              Absent on a sandbox created before the orchestrator recorded it.
      */
     public function __construct(
         public string $id,
@@ -22,6 +24,9 @@ final readonly class SandboxStatus
         public ?string $poolId = null,
         public ?string $url = null,
         public array $urls = [],
+        public ?string $image = null,
+        public ?float $cpu = null,
+        public ?int $memory = null,
         public ?string $error = null,
     ) {}
 
@@ -36,6 +41,9 @@ final readonly class SandboxStatus
             poolId: Data::optionalString($data, 'poolId', 'sandbox status'),
             url: Data::optionalString($data, 'url', 'sandbox status'),
             urls: Data::stringMap($data, 'urls', 'sandbox status'),
+            image: Data::optionalString($data, 'image', 'sandbox status'),
+            cpu: Data::optionalFloat($data, 'cpu', 'sandbox status'),
+            memory: Data::optionalInt($data, 'memory', 'sandbox status'),
             error: Data::optionalString($data, 'error', 'sandbox status'),
         );
     }

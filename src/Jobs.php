@@ -12,7 +12,7 @@ use OpenRuntimes\Orchestrator\Model\JobStatus;
 use OpenRuntimes\Orchestrator\Model\Volume;
 use Psr\Http\Client\ClientInterface;
 use Utopia\Client\Adapter\Curl\Client as CurlAdapter;
-use Utopia\Client as HttpClient;
+use Utopia\Client\Client as HttpClient;
 use Utopia\Psr7\Method;
 
 final readonly class Jobs

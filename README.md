@@ -4,7 +4,7 @@ PHP SDK for the Open Runtimes orchestrator: jobs, deployments, and sandboxes.
 
 Server: https://github.com/open-runtimes/orchestrator
 
-Each service is its own client over one configured `Utopia\Client`:
+Each service is its own client over one configured `Utopia\Client\Client`:
 
 ```php
 $jobs        = new Jobs($http);
@@ -18,7 +18,7 @@ use OpenRuntimes\Orchestrator\Jobs;
 use OpenRuntimes\Orchestrator\Model\Artifact\DownloadArtifact;
 use OpenRuntimes\Orchestrator\Model\Artifact\UploadArtifact;
 use OpenRuntimes\Orchestrator\Model\Callback;
-use Utopia\Client;
+use Utopia\Client\Client;
 use Utopia\Client\Adapter\Curl\Client as CurlAdapter;
 
 $http = new Client(new CurlAdapter())

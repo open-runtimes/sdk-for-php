@@ -11,7 +11,7 @@ use OpenRuntimes\Orchestrator\Model\SandboxStatus;
 use OpenRuntimes\Orchestrator\Model\Volume;
 use Psr\Http\Client\ClientInterface;
 use Utopia\Client\Adapter\Curl\Client as CurlAdapter;
-use Utopia\Client as HttpClient;
+use Utopia\Client\Client as HttpClient;
 use Utopia\Psr7\Method;
 
 /**

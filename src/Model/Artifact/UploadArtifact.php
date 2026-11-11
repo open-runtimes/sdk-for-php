@@ -11,7 +11,11 @@ final readonly class UploadArtifact implements Artifact
     use ArtifactFields;
 
     /**
+     * An `out` ending in `/` uploads the directory `in` file by file under it,
+     * skipping any entry whose name matches a glob in `excludes`.
+     *
      * @param  array<string, string>  $headers
+     * @param  list<string>  $excludes
      */
     public function __construct(
         public string $id,
@@ -21,6 +25,7 @@ final readonly class UploadArtifact implements Artifact
         public ?int $timeoutSeconds = null,
         public ?int $retries = null,
         public array $headers = [],
+        public array $excludes = [],
     ) {}
 
     public function type(): ArtifactType
@@ -45,6 +50,10 @@ final readonly class UploadArtifact implements Artifact
 
         if ($this->headers !== []) {
             $data['headers'] = $this->headers;
+        }
+
+        if ($this->excludes !== []) {
+            $data['excludes'] = $this->excludes;
         }
 
         return $data;

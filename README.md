@@ -55,6 +55,13 @@ $list = $jobs->list();
 $jobs->delete('build-001');
 ```
 
+An upload whose `out` ends in `/` sends the directory `in` file by file under that
+prefix, skipping names that match `excludes`:
+
+```php
+new UploadArtifact('site', 'site', 's3://bucket/sites/abc/', depends: 'unpack', excludes: ['.env*', 'node_modules']);
+```
+
 ## Deployments
 
 A deployment is a container serving HTTP behind the orchestrator's gateway, kept

@@ -17,6 +17,7 @@ final readonly class UnarchiveArtifact implements Artifact
         public ?string $subdir = null,
         public bool $strip = false,
         public ?string $depends = null,
+        public bool $writable = false,
     ) {}
 
     public function type(): ArtifactType
@@ -37,6 +38,10 @@ final readonly class UnarchiveArtifact implements Artifact
 
         if ($this->strip) {
             $data['strip'] = true;
+        }
+
+        if ($this->writable) {
+            $data['writable'] = true;
         }
 
         return $data;
